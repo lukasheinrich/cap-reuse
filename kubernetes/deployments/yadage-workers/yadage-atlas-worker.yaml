@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
        - name: yadage-atlas-worker
-         image: gitlab-registry.cern.ch/rodrigdi/cap-reuse:yadage-worker
+         image: lukasheinrich/cap_yadage_worker
          imagePullPolicy: Always
          env:
           - name: QUEUE_ENV

@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
        - name: step-broker
-         image: gitlab-registry.cern.ch/rodrigdi/cap-reuse:step-broker
+         image: lukasheinrich/cap_step_broker
          imagePullPolicy: Always
          ports:
           - containerPort: 5000 
@@ -22,4 +22,4 @@ spec:
       volumes:
        - name: svaccount
          secret:
-           secretName: default-token-kul0l
+           secretName: default-token-ke4ik
