@@ -38,6 +38,23 @@ def fibonacci(url, weight, experiment, filename, n):
         click.echo('Request {} of {}: {}'.format(i+1, n, response.text))
 
 
+import yaml
+def getinit_data(initfiles, parameters):
+    '''
+    get initial data from both a list of files and a list of 'pname=pvalue'
+    strings as they are passed in the command line <pvalue> is assumed to be a
+    YAML parsable string.
+    '''
+    initdata = {}
+    for initfile in initfiles:
+        initdata.update(**yaml.load(open(initfile)))
+
+    for x in parameters:
+        key, value = x.split('=')
+        initdata[key] = yaml.load(value)
+    return initdata
+
+
 @cli.command()
 @click.option('--url', default='http://137.138.6.126:32202/yadage',
               help='API endpoint')
@@ -46,23 +63,22 @@ def fibonacci(url, weight, experiment, filename, n):
               help='Experiment to address the request to')
 @click.option('-t', '--toplevel', default='toplevel', help='Toplevel')
 @click.option('-w', '--workflow', default='workflow', help='Yadage Workflow')
-@click.option('-p', '--parameters',
-              default={'param1': 'value1', 'param2': 'value2'},
-              help='Yadage Workflow')
+@click.option('--parameter', '-p', multiple=True)
 @click.option('-n', default='1',
               type=click.IntRange(min=1, max=40),
               help='Number of requests')
-def yadage(url, experiment, toplevel, workflow, parameters, n):
+def yadage(url, experiment, toplevel, workflow, parameter, n):
+    initdata = getinit_data([],parameter)
+    click.echo('initdata: %s' % initdata)
+
     data = {
         'experiment': experiment,
         'toplevel': toplevel,
         'workflow': workflow,
-        'parameters': parameters,
+        'parameters': initdata,
     }
-
-    for i in range(n):
-        response = requests.post(url, json=data)
-        click.echo('Request {} of {}: {}'.format(i+1, n, response.text))
+    response = requests.post(url, json=data)
+    click.echo('Request Response: {}'.format(response.text))
 
 if __name__ == '__main__':
     cli()

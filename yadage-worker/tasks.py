@@ -19,7 +19,6 @@ API_VERSION = 'api/v1.0'
 
 @app.task(name='tasks.run_yadage_workflow', ignore_result=True)
 def run_yadage_workflow(toplevel, workflow, parameters):
-
     log.info('Hello This is Lukas Talking... testing the turnaround time')
 
     log.info('running recast workflow on context: {toplevel} {workflow} {parameters}'.format(
@@ -28,11 +27,15 @@ def run_yadage_workflow(toplevel, workflow, parameters):
         parameters = parameters
         )
     )
-    
+
     jobguid = run_yadage_workflow.request.id
     workdir = os.path.join('/data',jobguid,'yadage')
 
-    fixed_pars = {'nevents': 100}
+
+    #here we consider parameters passed to the task as presets while parameters
+    #passed in a potential initial archive would be considered instance-specific
+
+    fixed_pars = parameters
     log.info('preset parameters are %s',fixed_pars)
 
     inputpath = '{}/init'.format(workdir)
@@ -42,7 +45,6 @@ def run_yadage_workflow(toplevel, workflow, parameters):
     presetfilename = '{}/preset.yaml'.format(inputpath)
     with open(presetfilename,'w') as presetfile:
         yaml.dump(fixed_pars,presetfile, default_flow_style = False)
-
 
     yadage_env = os.environ.copy()
 
