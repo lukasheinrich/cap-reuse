@@ -2,6 +2,7 @@ API_VERSION = 'api/v1.0'
 import requests
 import json
 import logging
+
 log = logging.getLogger('yadage.cap.submit')
 
 def submit(experiment, image, cmd):
@@ -26,23 +27,18 @@ def submit(experiment, image, cmd):
 
     job_id = str(response.json()['job-id'])
     log.info('Job {} sucessfully created'.format(job_id))
+    return job_id
 
-    log.info('will block until we are done!')
-
-    #block until job is done...
-    while True:
-        response = requests.get(
+def check_status(job_id):
+    response = requests.get(
         'http://{host}/{api}/{resource}/{id}'.format(
             host='step-broker-service.default.svc.cluster.local',
             api=API_VERSION,
             resource='jobs',
-            id=job_id))
+            id=job_id
+        )
+    )
 
-        job_info = response.json()['job']
-        print('job information: {}'.format(job_info))
-        if job_info['status'] != 'started':
-            break
-        import time
-        log.info('job is still in started mode.. sleep for 10 seconds')
-        time.sleep(10)
-    log.info('Job finished with info: {}'.format(job_info))
+    job_info = response.json()['job']
+    log.info('job information: %s',job_info)
+    return job_info
