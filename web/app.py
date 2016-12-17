@@ -90,13 +90,9 @@ def yadage_endpoint():
     if request.method == 'POST':
         try:
             if request.json:
-                toplevel = request.json['toplevel']
-                workflow = request.json['workflow']
-                parameters = request.json['parameters']
                 queue = experiment_to_queue[request.json['experiment']]
-
-                run_yadage_workflow.apply_async(
-                    args=[toplevel, workflow, parameters],
+                resultobject = run_yadage_workflow.apply_async(
+                    args = [request.json],
                     queue='yadage-{}'.format(queue)
                 )
 

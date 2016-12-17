@@ -3,9 +3,28 @@ from packtivity.syncbackends import packconfig, build_job, publish
 import submit
 import logging
 import pipes
+import base64
+import os
 
 
 log = logging.getLogger('yadage.cap.externalproxy')
+
+def create_context(context):
+   	[ os.makedirs(x) for x in context['readwrite'] ]
+
+def make_oneliner(job):
+    wrapped_cmd = 'sh -c {}  '.format(
+        pipes.quote(job['command'])
+    )
+    return wrapped_cmd
+
+def make_script(job):
+    encoded_script = base64.b64encode(job['script'])
+    cmd = 'echo {encoded}|base64 -d|{interpreter}'.format(encoded = encoded_script, interpreter = job['interpreter'])
+    wrapped_cmd = 'sh -c {}  '.format(
+        pipes.quote(cmd)
+    )
+    return wrapped_cmd
 
 class ExternalProxy(PacktivityProxyBase):
     def __init__(self, job_id, spec, pars, ctx):
@@ -43,29 +62,28 @@ class ExternalBackend(object):
 
     def submit(self, spec, parameters, context):
         job = build_job(spec['process'], parameters, self.config)
-        command = job['command']
+
+        if 'command' in job:
+            wrapped_cmd = make_oneliner(job)
+        elif 'script' in job:
+            wrapped_cmd = make_script(job)
+
         image   = spec['environment']['image']
         tag     = spec['environment']['imagetag']
 
-
         log.info('state context is %s',context)
-        log.info('would run (%s) in %s:%s',command,image,tag)
+        log.info('would run job %s',job)
 
-        import os
-       	[ os.makedirs(x) for x in context['readwrite'] ]
+        create_context(context)
 
         log.info('submitting!')
 
-        wrapped_cmd = 'sh -c {}  '.format(
-            pipes.quote(command)
-        )
         return ExternalProxy(
             job_id = submit.submit('atlas', image, wrapped_cmd),
             spec = spec,
             pars = parameters,
             ctx = context
         )
-
 
     def result(self, resultproxy):
         return publish(

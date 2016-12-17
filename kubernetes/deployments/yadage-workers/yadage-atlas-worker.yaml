@@ -23,6 +23,9 @@ spec:
          volumeMounts:
           - name: atlas
             mountPath: "/data"
+         ports:
+          - containerPort: 8888 
+            name: "tcp"
       volumes:
        - name: atlas
          cephfs:

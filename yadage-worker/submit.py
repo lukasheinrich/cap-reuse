@@ -36,7 +36,8 @@ def check_status(job_id):
             api=API_VERSION,
             resource='jobs',
             id=job_id
-        )
+        ),
+        headers = {'cache-control':'no-cache'}
     )
 
     job_info = response.json()['job']
