@@ -1,0 +1,22 @@
+version: '2'
+services:
+  proxy:
+    command: sh -c 'cd tracker; python proxy.py' 
+    image: yadage-monitor
+    ports:
+      - 8666:8666
+      - 8667:8667
+  server:
+    command: sh -c 'cd server; python app.py'
+    image: yadage-monitor
+    ports: 
+      - 5000:5000
+    environment:
+      - ZMQ_PROXY_CONNECT=tcp://proxy:8667
+  runner:
+    image: yadage-monitor
+    command: bash
+    tty: true
+    stdin_open: true
+    environment:
+    - ZMQ_PROXY_CONNECT=tcp://proxy:8666
