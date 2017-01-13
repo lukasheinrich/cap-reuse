@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import base64
 import traceback
-from flask import (Flask, abort, flash, redirect, render_template,
+from flask import (Flask, abort, flash, redirect, render_template, jsonify, 
                    request, url_for)
 from tasks import fibonacci
 from tasks import run_yadage_workflow
@@ -96,7 +96,7 @@ def yadage_endpoint():
                     queue='yadage-{}'.format(queue)
                 )
 
-                return 'Workflow successfully launched'
+                return jsonify({'msg':'Workflow successfully launched', 'job_id': resultobject.id})
 
         except (KeyError, ValueError):
             traceback.print_exc()

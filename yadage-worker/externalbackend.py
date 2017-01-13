@@ -78,8 +78,11 @@ class ExternalBackend(object):
 
         log.info('submitting!')
 
+        job_id = submit.submit('atlas', image, wrapped_cmd)
+        
+        log.info('submitted job: %s', job_id)
         return ExternalProxy(
-            job_id = submit.submit('atlas', image, wrapped_cmd),
+            job_id = job_id,
             spec = spec,
             pars = parameters,
             ctx = context

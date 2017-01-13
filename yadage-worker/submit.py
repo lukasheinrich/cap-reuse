@@ -26,7 +26,6 @@ def submit(experiment, image, cmd):
     )
 
     job_id = str(response.json()['job-id'])
-    log.info('Job {} sucessfully created'.format(job_id))
     return job_id
 
 def check_status(job_id):
@@ -41,5 +40,4 @@ def check_status(job_id):
     )
 
     job_info = response.json()['job']
-    log.info('job information: %s',job_info)
     return job_info
