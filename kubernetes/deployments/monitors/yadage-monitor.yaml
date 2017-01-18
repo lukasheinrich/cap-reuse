@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: yadage-monitor
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: yadage-monitor
+    spec:
+      containers:
+       - name: yadage-monitor
+         image: lukasheinrich/cap-yadage-monitor
+         imagePullPolicy: Always
+         command: ['sh','-c','cd server; python app.py']
+         env:
+          - name: ZMQ_PROXY_CONNECT
+            value: tcp://cap-msg-proxy.default.svc.cluster.local:8667
+         ports:
+          - containerPort: 5000
+            name: "tcp"

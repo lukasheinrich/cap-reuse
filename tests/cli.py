@@ -65,7 +65,8 @@ def getinit_data(initfiles, parameters):
 @click.option('-w', '--workflow', default='workflow', help='Yadage Workflow')
 @click.option('-a','--archive', default = None)
 @click.option('--parameter', '-p', multiple=True)
-def yadage(url, experiment, toplevel, workflow, parameter, archive):
+@click.option('-n','--nparallel', default = 2)
+def yadage(url, experiment, toplevel, workflow, parameter, archive,nparallel):
     initdata = getinit_data([],parameter)
     click.echo('initdata: %s' % initdata)
 
@@ -73,12 +74,13 @@ def yadage(url, experiment, toplevel, workflow, parameter, archive):
         'experiment': experiment,
         'toplevel': toplevel,
         'workflow': workflow,
-        'parameters': initdata,
+         'nparallel': nparallel,
+        'preset_pars': initdata,
     }
     if archive:
         data.update(inputarchive = archive)
     response = requests.post(url, json=data)
-    click.echo('Request Response: {}'.format(response.text))
+    click.echo('Request Response: {}'.format(response.json()))
 
 if __name__ == '__main__':
     cli()

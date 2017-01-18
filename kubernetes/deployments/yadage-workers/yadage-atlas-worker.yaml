@@ -14,6 +14,8 @@ spec:
          image: lukasheinrich/cap_yadage_worker
          imagePullPolicy: Always
          env:
+          - name: ZMQ_PROXY_CONNECT
+            value: tcp://cap-msg-proxy.default.svc.cluster.local:8666
           - name: QUEUE_ENV
             value: yadage-atlas-queue
           - name: EXPERIMENT

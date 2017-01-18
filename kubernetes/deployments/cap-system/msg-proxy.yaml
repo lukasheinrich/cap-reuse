@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: msg-proxy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: msg-proxy
+    spec:
+      containers:
+       - name: msg-proxy
+         image: lukasheinrich/cap-yadage-monitor
+         ports:
+          - containerPort: 8666
+          - containerPort: 8667
+         imagePullPolicy: Always
+         command: ['sh','-c','cd tracker; python proxy.py']
