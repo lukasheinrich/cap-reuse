@@ -95,8 +95,9 @@ def yadage_endpoint():
                     args = [request.json],
                     queue='yadage-{}'.format(queue)
                 )
-
-                return jsonify({'msg':'Workflow successfully launched', 'job_id': resultobject.id})
+            if 'redirect' in request.args:
+                return redirect('{}/{}'.format(os.environ['YADAGE_MONITOR_URL']),resultobject.id)
+            return jsonify({'msg':'Workflow successfully launched', 'job_id': resultobject.id})
 
         except (KeyError, ValueError):
             traceback.print_exc()
